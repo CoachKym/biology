@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History · Mock Mode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   HISTORY · PARCHMENT + BLOOD RED · MOCK MODE
+   ========================================================= */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #1a0f0a;
+  --bg-mid: #261713;
+  --parchment: #e8d5a8;
+  --parchment-dim: #c9b48a;
+  --parchment-bright: #f5e4ba;
+  --blood: #8b1a1a;
+  --blood-bright: #b82828;
+  --blood-glow: rgba(184, 40, 40, 0.4);
+  --ink: #2a1810;
+  --gold-accent: #c9a961;
+  --shadow-deep: rgba(0, 0, 0, 0.6);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse at top, #3a2118 0%, #1a0f0a 60%),
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(184, 40, 40, 0.02) 2px, rgba(184, 40, 40, 0.02) 4px);
+  color: var(--parchment);
+  min-height: 100vh;
+  padding: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 8px 14px;
+  border: 1px solid rgba(201, 169, 97, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+.back-link:hover {
+  color: var(--parchment-bright);
+  border-color: var(--gold-accent);
+  background: rgba(139, 26, 26, 0.2);
+}
+
+.container { max-width: 720px; margin: 0 auto; }
+
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title-block {
+  text-align: center;
+  padding: 24px 0 28px;
+  border-bottom: 2px solid var(--blood);
+  margin-bottom: 32px;
+  position: relative;
+}
+.title-block::before, .title-block::after {
+  content: "⚜";
+  position: absolute;
+  bottom: -14px;
+  background: var(--bg-deep);
+  padding: 0 12px;
+  color: var(--gold-accent);
+  font-size: 1.2rem;
+}
+.title-block::before { left: calc(50% - 60px); }
+.title-block::after { right: calc(50% - 60px); }
+
+.subject-badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--blood-bright);
+  border: 1px solid var(--blood);
+  padding: 4px 12px;
+  margin-bottom: 12px;
+}
+.title-block h1 {
+  font-size: 2.4rem;
+  color: var(--parchment-bright);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(184, 40, 40, 0.2);
+  margin-bottom: 8px;
+}
+.tagline {
+  color: var(--parchment-dim);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.rounds-grid { display: grid; gap: 14px; }
+.round-card {
+  background: linear-gradient(135deg, rgba(38, 23, 19, 0.95), rgba(26, 15, 10, 0.95));
+  border: 1px solid rgba(201, 169, 97, 0.25);
+  border-radius: 8px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.round-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--blood);
+  transition: width 0.2s;
+}
+.round-card:hover {
+  border-color: var(--gold-accent);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px var(--shadow-deep);
+}
+.round-card:hover::before { width: 6px; background: var(--blood-bright); }
+
+.round-card.boss {
+  background: linear-gradient(135deg, rgba(80, 14, 14, 0.6), rgba(38, 23, 19, 0.95));
+  border-color: var(--blood);
+}
+.round-card.boss::before {
+  background: var(--blood-bright);
+  box-shadow: 0 0 12px var(--blood-glow);
+}
+
+.round-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.round-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--parchment-bright);
+}
+.round-icon { font-size: 1.4rem; }
+.round-desc {
+  font-size: 0.88rem;
+  color: var(--parchment-dim);
+  margin-bottom: 8px;
+}
+.round-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.1em;
+  color: var(--gold-accent);
+}
+.best-score {
+  color: var(--blood-bright);
+  font-weight: 700;
+}
+
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+}
+.q-round-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--parchment-dim);
+  letter-spacing: 0.05em;
+}
+.q-progress-text {
+  font-family: 'Cinzel', serif;
+  color: var(--gold-accent);
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(201, 169, 97, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blood), var(--blood-bright));
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px var(--blood-glow);
+}
+
+.question-box {
+  background: rgba(38, 23, 19, 0.6);
+  border-left: 4px solid var(--blood);
+  padding: 20px 22px;
+  border-radius: 6px;
+  margin-bottom: 22px;
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--parchment-bright);
+}
+
+.options { display: grid; gap: 10px; margin-bottom: 20px; }
+.option {
+  background: rgba(38, 23, 19, 0.7);
+  color: var(--parchment);
+  border: 1px solid rgba(201, 169, 97, 0.3);
+  padding: 14px 18px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.98rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.option:not(:disabled):hover {
+  border-color: var(--gold-accent);
+  background: rgba(139, 26, 26, 0.2);
+  transform: translateX(2px);
+}
+.option-letter {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: var(--gold-accent);
+  min-width: 22px;
+}
+.option:disabled { cursor: default; opacity: 0.85; }
+.option.correct {
+  background: rgba(40, 100, 40, 0.35);
+  border-color: #5a9a4a;
+  color: #d4f0c4;
+}
+.option.correct .option-letter { color: #9ed68a; }
+.option.wrong {
+  background: rgba(139, 26, 26, 0.4);
+  border-color: var(--blood-bright);
+}
+
+.feedback {
+  display: none;
+  padding: 16px 20px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border-left: 4px solid;
+}
+.feedback.show { display: block; animation: fadeIn 0.3s; }
+.feedback.correct {
+  background: rgba(40, 100, 40, 0.2);
+  border-color: #5a9a4a;
+}
+.feedback.wrong {
+  background: rgba(139, 26, 26, 0.25);
+  border-color: var(--blood-bright);
+}
+.feedback-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+.feedback.correct .feedback-title { color: #b8e8a0; }
+.feedback.wrong .feedback-title { color: #ff8585; }
+.feedback-text {
+  color: var(--parchment);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.next-btn {
+  display: none;
+  width: 100%;
+  background: linear-gradient(135deg, var(--blood), var(--blood-bright));
+  color: var(--parchment-bright);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px var(--blood-glow);
+}
+.next-btn.show { display: block; animation: fadeIn 0.3s; }
+.next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px var(--blood-glow);
+}
+
+.results-block { text-align: center; padding: 20px 0; }
+.results-round-name {
+  font-family: 'Cinzel', serif;
+  color: var(--parchment-dim);
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+  font-size: 1rem;
+}
+
+.score-circle {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 40, 40, 0.15) 0%, rgba(26, 15, 10, 0.9) 70%);
+  border: 3px solid var(--blood);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px var(--blood-glow), inset 0 0 30px rgba(0,0,0,0.5);
+}
+.score-num {
+  font-family: 'Cinzel', serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--parchment-bright);
+  line-height: 1;
+  text-shadow: 0 0 12px var(--blood-glow);
+}
+.score-total {
+  font-family: 'Cinzel', serif;
+  color: var(--gold-accent);
+  font-size: 1.1rem;
+  margin-top: 4px;
+}
+
+.score-message {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--blood-bright);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.score-sub {
+  color: var(--parchment-dim);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.new-best {
+  display: none;
+  background: linear-gradient(135deg, rgba(201, 169, 97, 0.25), rgba(184, 40, 40, 0.15));
+  border: 1px solid var(--gold-accent);
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-family: 'Cinzel', serif;
+  color: var(--gold-accent);
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+}
+
+.results-buttons { display: grid; gap: 10px; max-width: 360px; margin: 0 auto; }
+.btn-primary, .btn-secondary {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--blood), var(--blood-bright));
+  color: var(--parchment-bright);
+  box-shadow: 0 2px 12px var(--blood-glow);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 18px var(--blood-glow); }
+.btn-secondary {
+  background: transparent;
+  color: var(--parchment);
+  border: 1px solid rgba(201, 169, 97, 0.4);
+}
+.btn-secondary:hover { background: rgba(139, 26, 26, 0.2); border-color: var(--gold-accent); }
+
+@media (max-width: 480px) {
+  .title-block h1 { font-size: 1.8rem; }
+  .question-box { font-size: 1rem; padding: 16px; }
+  .option { font-size: 0.92rem; padding: 12px 14px; }
+  .score-num { font-size: 3.2rem; }
+  .score-circle { width: 150px; height: 150px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="back-link">← MOCK MODE</a>
+
+  <div id="home-screen" class="screen active">
+    <div class="title-block">
+      <div class="subject-badge">SUBJECT · 03</div>
+      <h1>HISTORY</h1>
+      <div class="tagline">Empires fall. Dictators rise. Pick your battle.</div>
+    </div>
+    <div class="rounds-grid" id="rounds-grid"></div>
+  </div>
+
+  <div id="question-screen" class="screen">
+    <div class="q-header">
+      <div class="q-round-name" id="q-round-name"></div>
+      <div class="q-progress-text" id="q-progress-text"></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="question-box" id="question-box"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback" id="feedback">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-text" id="feedback-text"></div>
+    </div>
+    <button class="next-btn" id="next-btn">NEXT →</button>
+  </div>
+
+  <div id="results-screen" class="screen">
+    <div class="results-block">
+      <div class="results-round-name" id="results-round-name"></div>
+      <div class="score-circle">
+        <div class="score-num" id="score-num">0</div>
+        <div class="score-total" id="score-total">/ 10</div>
+      </div>
+      <div class="score-message" id="score-message"></div>
+      <div class="score-sub" id="score-sub"></div>
+      <div class="new-best" id="new-best">⚜ NEW PERSONAL BEST ⚜</div>
+      <div class="results-buttons">
+        <button class="btn-primary" id="play-again-btn">RUN IT BACK</button>
+        <button class="btn-secondary" id="back-home-btn">CHOOSE ANOTHER ROUND</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   QUESTION BANK · HISTORY (v2 — balanced option lengths)
+   All four options per question are roughly the same length.
+   Options are shuffled every render via shuffleOptions().
+   ========================================================== */
+const QUESTION_BANK = {
+  weimar: [
+    {
+      q: "The Weimar Constitution gave Germany proportional representation. What did this mean in practice?",
+      options: [
+        "Only the largest party could hold seats, keeping the Reichstag stable",
+        "Seats matched each party's share of votes, creating many small parties",
+        "Voters picked between two main parties in a run-off ballot system",
+        "The Kaiser still chose the Chancellor from the biggest party's list"
+      ],
+      correct: 1,
+      explain: "Proportional representation = seats match votes. Sounds fair, but it meant lots of tiny parties got in, no one ever had a majority, and coalitions kept collapsing. Big weakness."
+    },
+    {
+      q: "What was Article 48 of the Weimar Constitution?",
+      options: [
+        "It gave all German women the right to vote in national elections",
+        "It abolished the German army and replaced it with a small militia",
+        "It let the President rule by decree in emergencies, bypassing parliament",
+        "It restored the Kaiser's role as ceremonial head of the German state"
+      ],
+      correct: 2,
+      explain: "Article 48 = emergency powers. Designed as a safety valve, but Hitler later weaponised it to crush democracy. The constitution literally contained the tool used to destroy it."
+    },
+    {
+      q: "Which of these was a STRENGTH of the Weimar Constitution?",
+      options: [
+        "It guaranteed single-party rule, giving Germany much-needed stability",
+        "All Germans over 20 could vote, including women — hugely democratic",
+        "It removed all civil liberties to prevent revolutionary street unrest",
+        "It kept the monarchy in place but with strictly limited legal powers"
+      ],
+      correct: 1,
+      explain: "Universal suffrage from age 20 (women included!) made Weimar one of the most democratic constitutions on the planet at the time. The problem wasn't the rules — it was how Germans felt about them."
+    },
+    {
+      q: "Why did many Germans dislike the Weimar Republic from the start?",
+      options: [
+        "They blamed it for signing Versailles — calling its leaders 'November Criminals'",
+        "It was secretly controlled by the British government through trade agreements",
+        "It banned all traditional German cultural events and replaced them with French ones",
+        "It rebuilt Germany's military too quickly, making neighbouring countries hostile"
+      ],
+      correct: 0,
+      explain: "The 'stab in the back' myth: Weimar politicians were branded the 'November Criminals' for signing Versailles. Never mind that the army had already lost — the Republic took the blame forever."
+    },
+    {
+      q: "The Weimar Constitution had a President AND a Chancellor. What was the key problem?",
+      options: [
+        "Both officials were always the same person, creating a conflict of interest",
+        "The President could override the Chancellor in a crisis using Article 48",
+        "Neither had any real authority because the military ran the whole country",
+        "Both officials were legally required to come from the same political party"
+      ],
+      correct: 1,
+      explain: "Two heads of government = constant power tug-of-war. When Hindenburg started using Article 48 a lot in the early 30s, democracy was already on life support before Hitler even arrived."
+    },
+    {
+      q: "When was the Weimar Republic established?",
+      options: [
+        "At the outbreak of World War I, in August 1914",
+        "After the Kaiser abdicated, during 1918–19",
+        "During the height of the hyperinflation crisis in 1923",
+        "When Hitler was first appointed Chancellor in 1933"
+      ],
+      correct: 1,
+      explain: "The Kaiser abdicated November 1918, the Constitution was drawn up in Weimar (the town) in 1919 — Berlin was too unstable thanks to the Spartacist uprising."
+    },
+    {
+      q: "Which Treaty of Versailles term caused the most anger in Germany?",
+      options: [
+        "The ban on German citizens travelling abroad without special permits",
+        "Article 231, the 'War Guilt clause', forcing Germany to accept full blame",
+        "The requirement that all German schools teach French as a first language",
+        "The forced conversion of German factories into French-owned businesses"
+      ],
+      correct: 1,
+      explain: "The War Guilt clause was the emotional gut-punch. Reparations hurt the wallet, but Article 231 hurt national pride — and that's what fuelled extremists for the next 20 years."
+    },
+    {
+      q: "How much was Germany ordered to pay in reparations under Versailles?",
+      options: [
+        "£66 million, paid in monthly instalments over five years",
+        "£660 million, payable directly to France and Belgium only",
+        "£6.6 billion — an astronomical sum for a defeated nation",
+        "£66 billion, though most of it was quietly cancelled in 1920"
+      ],
+      correct: 2,
+      explain: "£6.6 billion — astronomical for 1921. Germany paid one instalment, then said 'nope' in 1923. Cue the French rolling tanks into the Ruhr."
+    },
+    {
+      q: "Who led the Spartacist uprising in January 1919?",
+      options: [
+        "Adolf Hitler and Hermann Göring, leading a right-wing militia group",
+        "Karl Liebknecht and Rosa Luxemburg, attempting a communist revolution",
+        "Friedrich Ebert and Gustav Stresemann, defending the new constitution",
+        "Wolfgang Kapp and Erich Ludendorff, marching with former army soldiers"
+      ],
+      correct: 1,
+      explain: "Liebknecht and Luxemburg — communists trying to copy the Russian Revolution. The Freikorps crushed them and murdered both leaders. Brutal start to the Republic."
+    },
+    {
+      q: "What was the Kapp Putsch (1920)?",
+      options: [
+        "A communist takeover of Berlin's factories that lasted three full weeks",
+        "A right-wing coup attempt, defeated when Berlin's workers went on general strike",
+        "Hitler's first failed attempt to seize control of the Bavarian government",
+        "A French-backed invasion of the Ruhr industrial region to seize coal supplies"
+      ],
+      correct: 1,
+      explain: "Wolfgang Kapp + Freikorps marched on Berlin. The army refused to fight them, but Berlin's workers went on strike — turned the lights off, basically. Kapp gave up after 4 days."
+    },
+    {
+      q: "Why did France and Belgium occupy the Ruhr in 1923?",
+      options: [
+        "Germany had launched a surprise military attack on French border towns",
+        "Germany stopped paying reparations, so France seized the industrial heartland",
+        "France wanted to help German factories rebuild their production capacity",
+        "France was trying to prevent a communist revolution from spreading westward"
+      ],
+      correct: 1,
+      explain: "Germany missed reparations. France went 'fine, we'll take it ourselves' and seized the Ruhr industrial heartland. German workers passive-resisted. Factories ground to a halt."
+    },
+    {
+      q: "What caused the hyperinflation crisis of 1923?",
+      options: [
+        "Too many British tourists spending pounds in German cities and shops",
+        "The government printed massive amounts of money to pay striking workers",
+        "A catastrophic wheat shortage following two years of flooding and drought",
+        "Stresemann accidentally doubled all taxes on businesses and households"
+      ],
+      correct: 1,
+      explain: "Print money → pay workers → prices skyrocket. By late 1923 a loaf of bread cost 200 BILLION marks. People burnt cash for warmth — it was cheaper than firewood."
+    },
+    {
+      q: "Who actually BENEFITED from hyperinflation?",
+      options: [
+        "Pensioners living on fixed incomes from government payments each month",
+        "People with savings accounts, who'd been carefully investing for years",
+        "People who owed debts — they paid them off using worthless banknotes",
+        "Civil servants on fixed wages who received the same pay regardless"
+      ],
+      correct: 2,
+      explain: "Owed someone a million marks? Pay them with a single now-worthless note. Debts vanished. But pensioners and savers? Wiped out. Created lasting bitterness toward Weimar."
+    },
+    {
+      q: "What did Gustav Stresemann do to fix hyperinflation in late 1923?",
+      options: [
+        "He banned all use of paper money for six months across the whole country",
+        "He introduced the Rentenmark, a new currency backed by German property",
+        "He begged Britain to lend Germany £100 million in emergency gold reserves",
+        "He made gold coins the only legal form of currency in German-held territory"
+      ],
+      correct: 1,
+      explain: "The Rentenmark — backed by German land/industry, not gold. A confidence trick really, but it WORKED. Inflation stopped almost overnight. Stresemann is the unsung hero of Weimar."
+    },
+    {
+      q: "What was the Dawes Plan (1924)?",
+      options: [
+        "Germany received US loans and reparation payments were spread out over more years",
+        "Germany's reparations were completely cancelled by the Allied powers forever",
+        "The League of Nations took direct control of all major German banking operations",
+        "Germany was finally allowed to rebuild its army to pre-war strength and numbers"
+      ],
+      correct: 0,
+      explain: "American banker Charles Dawes basically said 'let's make this manageable.' US loans flooded in, reparations payments were eased, German economy boomed. Until 1929 ruined it all."
+    },
+    {
+      q: "Which 1925 agreement saw Germany accept its western borders with France and Belgium?",
+      options: [
+        "The original Treaty of Versailles, signed under protest at the Paris conference",
+        "The Locarno Treaties, a major diplomatic success negotiated by Stresemann",
+        "The Kellogg-Briand Pact, a multinational agreement to outlaw all future wars",
+        "The Dawes Plan, which linked border acceptance to American financial support"
+      ],
+      correct: 1,
+      explain: "Locarno = Stresemann's diplomatic masterpiece. Germany voluntarily accepting Versailles borders made the world breathe again. Got Germany into the League of Nations a year later."
+    },
+    {
+      q: "What was the Kellogg-Briand Pact (1928)?",
+      options: [
+        "An agreement between Germany and the USA to share new industrial technology",
+        "A pact where 62 nations agreed to renounce war as a way of solving disputes",
+        "A secret trade deal giving Germany cheap access to American raw materials",
+        "A military alliance formed by European nations to defend against the Soviets"
+      ],
+      correct: 1,
+      explain: "Big idealistic 'no more war' agreement. Obviously didn't last — but it showed Germany was being treated as a respectable global player again under Stresemann."
+    },
+    {
+      q: "Why was the Weimar economic recovery (1924–29) actually fragile?",
+      options: [
+        "It was built on short-term American loans that could be recalled at any time",
+        "Hitler was secretly stockpiling weapons using hidden government bank accounts",
+        "German citizens refused to spend money, keeping the economy permanently flat",
+        "France kept sending small military raids into German towns along the border"
+      ],
+      correct: 0,
+      explain: "Recovery was on borrowed time AND borrowed money. When Wall Street crashed in 1929, the US recalled its loans. Germany's house of cards collapsed instantly."
+    }
+  ],
+
+  rise: [
+    {
+      q: "What event in October 1929 triggered Germany's economic collapse?",
+      options: [
+        "The sudden death of President Hindenburg from a heart attack at age 82",
+        "The Wall Street Crash in the USA, causing American banks to recall all loans",
+        "The assassination of Stresemann by a left-wing radical outside the Reichstag",
+        "Hitler's shock election as Chancellor after a surprise landslide Nazi victory"
+      ],
+      correct: 1,
+      explain: "Wall Street crashed → US banks recalled loans from Germany → German banks collapsed → factories shut → mass unemployment. The Weimar economic miracle had been a loan-fuelled mirage."
+    },
+    {
+      q: "By 1932, roughly how many Germans were unemployed?",
+      options: [
+        "Around 600,000 — mostly in rural farming areas in the south",
+        "Roughly 2 million — concentrated in the coal and steel industries",
+        "Approximately 4 million — mainly white-collar office workers in cities",
+        "About 6 million — around one in three of the entire workforce"
+      ],
+      correct: 3,
+      explain: "Six MILLION unemployed by 1932 — about 1 in 3 workers. Hunger, queues for soup, families evicted. Desperate people look for radical answers — and Hitler was offering them."
+    },
+    {
+      q: "How did the Great Depression help Hitler's rise?",
+      options: [
+        "Hitler personally created millions of jobs across the German industrial sector",
+        "People lost faith in democracy and turned to extreme parties on both sides",
+        "The Nazis bribed every registered voter with free food parcels and clothing",
+        "The German army forced civilians to vote for the Nazi Party under direct threat"
+      ],
+      correct: 1,
+      explain: "Crisis = radicalisation. In 1928 Nazis had 12 Reichstag seats. By July 1932 they had 230 — the largest single party. The Depression handed Hitler his audience on a plate."
+    },
+    {
+      q: "Why did middle-class Germans turn to the Nazis during the Depression?",
+      options: [
+        "They loved the Nazi art exhibitions touring all the major German cities",
+        "They feared communism would take their property — Hitler vowed to crush it",
+        "Hitler promised completely free university education for all their children",
+        "They wanted Germany to form a permanent political alliance with the Soviets"
+      ],
+      correct: 1,
+      explain: "Middle-class Germans had savings, businesses, status. Communism would take all of that. Hitler said 'I'll smash the Reds AND restore order.' To them, he sounded like a saviour."
+    },
+    {
+      q: "What did Chancellor Brüning's response to the Depression do to Weimar's reputation?",
+      options: [
+        "It saved the German economy by 1931 through a massive jobs programme",
+        "His austerity policies made suffering worse and made democracy look useless",
+        "He successfully borrowed billions from the USSR to rebuild German industry",
+        "He resigned immediately and was praised for putting the nation's needs first"
+      ],
+      correct: 1,
+      explain: "Brüning earned the nickname 'the Hunger Chancellor.' He ruled mostly by Article 48 decree — proving democracy couldn't fix the crisis. Voters thought: 'Why bother with the Reichstag?'"
+    },
+    {
+      q: "Which group did the Depression hit HARDEST in Germany?",
+      options: [
+        "Aristocrats with large country estates in eastern Prussia",
+        "Industrial workers who lost jobs as factories shut down",
+        "British tourists visiting Germany on their summer holidays",
+        "Catholic priests in southern Bavaria's rural communities"
+      ],
+      correct: 1,
+      explain: "Industrial workers — factories shut, wages slashed, queues at soup kitchens. Many turned Communist. The middle class panicked at the rising Red tide and ran to Hitler. Crisis on every side."
+    },
+    {
+      q: "How did the Depression affect membership of extremist parties?",
+      options: [
+        "Both Nazi and Communist parties surged while the moderate centre shrank",
+        "Only the Nazis grew in size — all other parties stayed roughly the same",
+        "All political parties lost members equally across the entire spectrum",
+        "The Liberal Democratic party unexpectedly became Germany's largest group"
+      ],
+      correct: 0,
+      explain: "Both extremes grew. The Communists got to about 100 seats by 1932. This terrified business owners — and pushed them to fund and back the Nazis to keep the Reds out."
+    },
+    {
+      q: "What was the original name of the party Hitler joined in 1919?",
+      options: [
+        "The National Socialist Party, already using the name 'Nazi' publicly",
+        "The German Workers' Party (DAP), a tiny nationalist group in Munich",
+        "The Communist Party of Germany, allied closely with Soviet leaders",
+        "The Spartacist League, the radical left-wing movement in Berlin"
+      ],
+      correct: 1,
+      explain: "DAP — German Workers' Party. Tiny, founded by Anton Drexler. Hitler joined as member #555 (and they started numbering at 500 to look bigger). Soon he'd be running it."
+    },
+    {
+      q: "What did Hitler rename the party in 1920?",
+      options: [
+        "The German Communist Workers' Alliance, to attract socialist voters",
+        "The National Socialist German Workers' Party, known as the NSDAP",
+        "The Bavarian People's Nationalist Party, focused only on the south",
+        "The Third Reich Freedom Movement, named after Germany's future state"
+      ],
+      correct: 1,
+      explain: "NSDAP — Nazi for short. 'National Socialist' was deliberately broad: 'national' to grab patriots, 'socialist' to grab workers. Sneaky branding from day one."
+    },
+    {
+      q: "What was the Munich Putsch (November 1923)?",
+      options: [
+        "A communist uprising in central Berlin that lasted for nearly two weeks",
+        "Hitler's failed attempt to seize power in Bavaria by force of arms",
+        "A peaceful march by Nazi supporters through Munich's city centre streets",
+        "The formal signing of a military alliance treaty between Germany and Austria"
+      ],
+      correct: 1,
+      explain: "Hitler stormed a Munich beer hall, declared a 'national revolution,' marched on the city centre next day. Police opened fire. 16 Nazis dead. Hitler arrested. Looked like a total disaster."
+    },
+    {
+      q: "What did Hitler write while imprisoned in Landsberg after the Munich Putsch?",
+      options: [
+        "Das Kapital, the foundational text of international communist theory",
+        "Mein Kampf ('My Struggle'), laying out his entire political ideology",
+        "The Communist Manifesto, calling for a global workers' revolution",
+        "The Doctrine of Fascism, based closely on Mussolini's Italian model"
+      ],
+      correct: 1,
+      explain: "Mein Kampf laid out his whole ideology: Aryan supremacy, antisemitism, hatred of communism, Lebensraum (living space) in the East. Sold modestly at first — became a bestseller after 1933."
+    },
+    {
+      q: "What lesson did Hitler take from the Munich Putsch failure?",
+      options: [
+        "That violent revolution was the only realistic path to political power",
+        "That he should abandon politics entirely and focus on writing books",
+        "That he needed to win power legally through elections, not by force",
+        "That he should leave Germany permanently and rebuild the party abroad"
+      ],
+      correct: 2,
+      explain: "Massive strategic pivot. After 1923 Hitler said 'we'll outvote them, then outlaw them.' He still had the SA for street violence — but the route to power had to look legal."
+    },
+    {
+      q: "What was the SA?",
+      options: [
+        "The Nazi army of professional soldiers trained in secret military camps",
+        "Hitler's personal elite bodyguard unit, never more than 200 members",
+        "The 'Brownshirts' — a paramilitary group that intimidated rival parties",
+        "A Nazi youth choir that performed at political rallies across Bavaria"
+      ],
+      correct: 2,
+      explain: "Sturmabteilung. Brown uniforms. Led by Ernst Röhm. Mainly ex-soldiers and unemployed thugs. Beat up communists at meetings. By 1932 there were 400,000 of them — bigger than the army."
+    },
+    {
+      q: "Which of these was a key Nazi method to win support before 1933?",
+      options: [
+        "Promising free holidays to the moon using experimental rocket technology",
+        "Mass rallies, propaganda posters, rousing speeches and organised youth groups",
+        "Banning all other political parties from operating anywhere inside Germany",
+        "Sending German workers to the Soviet Union for specialist training programmes"
+      ],
+      correct: 1,
+      explain: "Pageantry + propaganda + a 'movement' feel. Goebbels masterminded the show. Plus Hitler genuinely was a magnetic public speaker — even his enemies admitted that."
+    },
+    {
+      q: "Who was Chancellor when Hitler was finally appointed his successor in January 1933?",
+      options: [
+        "Brüning, who had served since 1930 through the worst of the Depression crisis",
+        "Von Papen, who had been scheming to return to power as Vice-Chancellor himself",
+        "Von Schleicher, who had lasted just 57 days before being politically outmanoeuvred",
+        "Hindenburg, who held the dual role of President and Chancellor simultaneously"
+      ],
+      correct: 2,
+      explain: "Schleicher had only been Chancellor 57 days. He'd schemed his way up, then got out-schemed by von Papen — who convinced Hindenburg to give Hitler the top job."
+    },
+    {
+      q: "Why did von Papen persuade Hindenburg to make Hitler Chancellor?",
+      options: [
+        "Von Papen was a genuine and enthusiastic believer in Nazi racial ideology",
+        "He thought he could control Hitler from the sidelines and use Nazi popularity",
+        "Hitler had personally bribed him with millions of marks in secret bank accounts",
+        "Von Papen was being blackmailed by the SA and had absolutely no other choice"
+      ],
+      correct: 1,
+      explain: "Famous last words from von Papen: 'Within two months we will have pushed Hitler so far into a corner he'll squeak.' Lol. Hitler ate them for breakfast within weeks."
+    },
+    {
+      q: "President Hindenburg initially refused to appoint Hitler. Why did he change his mind?",
+      options: [
+        "Hitler personally threatened to have the SA attack the presidential palace",
+        "Conservative elites convinced him that Hitler could be controlled and contained",
+        "The Reichstag passed a formal vote forcing Hindenburg to make the appointment",
+        "Hindenburg was deeply inspired by a private speech Hitler gave at his residence"
+      ],
+      correct: 1,
+      explain: "Hindenburg called Hitler 'that Bohemian corporal' and despised him. But conservative bigwigs (von Papen included) convinced the old man Hitler was containable. Worst political miscalculation of the century."
+    }
+  ],
+
+  dictatorship: [
+    {
+      q: "Who was Joseph Goebbels?",
+      options: [
+        "The head of the Gestapo secret police, running a network of informants",
+        "The Nazi Minister of Propaganda, controlling all media across Germany",
+        "The commander of the SS, overseeing concentration camps and racial policy",
+        "The Chancellor of Germany before Hitler was appointed to the same role"
+      ],
+      correct: 1,
+      explain: "Goebbels ran the Reich Ministry of Public Enlightenment and Propaganda. He shaped what every German saw, heard, read — and crucially what they DIDN'T. Master of the message."
+    },
+    {
+      q: "How did the Nazis use radio for propaganda?",
+      options: [
+        "They banned all radio broadcasts across Germany to control information flow",
+        "They mass-produced cheap receivers so every household could hear Hitler's speeches",
+        "They restricted radio ownership exclusively to members of the German military",
+        "They made it illegal to own a radio in any private home without a special licence"
+      ],
+      correct: 1,
+      explain: "The Volksempfänger was deliberately limited — couldn't pick up foreign stations. By 1939, 70% of German homes had one. Hitler's voice was literally inescapable."
+    },
+    {
+      q: "What was the 1936 Berlin Olympics used for?",
+      options: [
+        "To launch a permanent global sporting movement led by German organisers",
+        "As a massive propaganda showcase, presenting Nazi Germany as modern and strong",
+        "To recruit talented foreign athletes as soldiers for the expanding German SS",
+        "To raise money specifically for German hospitals and medical research centres"
+      ],
+      correct: 1,
+      explain: "The 1936 Olympics were Goebbels' propaganda Super Bowl. Beautiful stadiums, organisation, athletic dominance. Then Jesse Owens won 4 golds and undermined the whole 'Aryan supremacy' show."
+    },
+    {
+      q: "What were the Nuremberg Rallies?",
+      options: [
+        "War crimes court trials for captured enemies of the Nazi German state",
+        "Massive annual propaganda events with torchlit parades and Hitler's speeches",
+        "National football tournaments held every summer in the city of Nuremberg",
+        "Anti-war protest marches organised by underground resistance movements"
+      ],
+      correct: 1,
+      explain: "Pure spectacle. Hundreds of thousands of party members. Searchlights forming a 'cathedral of light.' Hitler at the centre like a god. Designed to make you FEEL belonging — propaganda as theatre."
+    },
+    {
+      q: "What did Nazi propaganda do to non-Nazi books in May 1933?",
+      options: [
+        "Translated them into German and distributed them to every school in the country",
+        "Carefully archived them in the national library for future historical reference",
+        "Publicly burnt them in coordinated mass bonfires held across German cities",
+        "Sold them abroad to raise foreign currency for German military rearmament"
+      ],
+      correct: 2,
+      explain: "Book burnings in 1933 — Jewish authors, communists, anything 'un-German.' Goebbels gave a speech as the flames rose. Pure censorship-as-spectacle. Public, dramatic, terrifying."
+    },
+    {
+      q: "Why was propaganda such a powerful Nazi tool?",
+      options: [
+        "It was the only method used — the Nazis never used any force or intimidation",
+        "It controlled what people saw, heard and thought, making resistance near-impossible",
+        "It was entirely funded by sympathetic foreign governments like Italy and Japan",
+        "It only targeted young children under ten, shaping them before school began"
+      ],
+      correct: 1,
+      explain: "Propaganda + censorship + fear of the Gestapo = total control of the information landscape. You can't organise resistance if you can't tell who agrees with you. Genius and terrifying."
+    },
+    {
+      q: "Which film-maker created powerful Nazi propaganda films like 'Triumph of the Will'?",
+      options: [
+        "Fritz Lang, who directed 'Metropolis' and later fled Germany for Hollywood",
+        "Leni Riefenstahl, a technically brilliant director who collaborated with Hitler",
+        "Marlene Dietrich, the famous German-American actress and singer of that era",
+        "Sergei Eisenstein, the Soviet film pioneer known for 'Battleship Potemkin'"
+      ],
+      correct: 1,
+      explain: "Riefenstahl — technically brilliant film-maker, morally bankrupt collaborator. 'Triumph of the Will' (1935) made the Nuremberg Rally look like a religious experience. Still studied in film schools today."
+    },
+    {
+      q: "What was the Reichstag Fire (February 1933)?",
+      options: [
+        "A grand celebration to officially mark Hitler's appointment as Chancellor of Germany",
+        "A fire that destroyed the German parliament, used as an excuse to crush the opposition",
+        "An accidental gas leak explosion that caused minimal damage to the Reichstag building",
+        "A planned military parade through Berlin organised by the newly expanded German army"
+      ],
+      correct: 1,
+      explain: "Marinus van der Lubbe (a Dutch communist) was caught at the scene. Convenient! Many think the Nazis set it themselves. Either way, Hitler used it to ban communists and arrest thousands overnight."
+    },
+    {
+      q: "What did the Enabling Act (March 1933) do?",
+      options: [
+        "It gave Hitler the power to make laws without the Reichstag for four years",
+        "It made Hitler the permanent President of Germany for the rest of his lifetime",
+        "It officially banned the Nazi Party from all future elections across Germany",
+        "It restored full democratic rights and reversed all emergency decree powers"
+      ],
+      correct: 0,
+      explain: "Enabling Act = legal dictatorship in one document. Hitler could now bypass parliament entirely. Within months: trade unions banned, other parties banned, one-party state. Game over for Weimar."
+    },
+    {
+      q: "What was the Night of the Long Knives (June 1934)?",
+      options: [
+        "A devastating British air raid on key military targets in central Berlin",
+        "Hitler's purge of the SA leadership, especially Ernst Röhm, using the SS",
+        "A nationwide safety campaign focused on reducing kitchen knife accidents",
+        "The first Kristallnacht attack on Jewish businesses and places of worship"
+      ],
+      correct: 1,
+      explain: "Hitler had the SA's top brass murdered — Röhm shot in his cell. Why? The SA was getting too powerful and the army hated them. Hitler chose the army's loyalty over Röhm's. About 200 killed."
+    },
+    {
+      q: "What happened when President Hindenburg died in August 1934?",
+      options: [
+        "Germany held new free elections and a democratic successor was duly chosen",
+        "Hitler merged Chancellor and President into 'Führer' — the army swore loyalty to him",
+        "Von Papen was automatically promoted to the role of President by German law",
+        "The German monarchy was officially restored with the Kaiser's grandson as head of state"
+      ],
+      correct: 1,
+      explain: "Hindenburg dies → Hitler merges the offices → army oath now to HIM personally, not to Germany. That oath is why most generals stayed loyal even when they doubted him. Total power."
+    },
+    {
+      q: "Who ran the Gestapo?",
+      options: [
+        "Goebbels, who combined propaganda with direct oversight of all police forces",
+        "Himmler and Heydrich, who built the SS and secret police terror apparatus",
+        "Röhm, who controlled both the SA Brownshirts and all German law enforcement",
+        "Goering, who personally commanded every branch of the German military forces"
+      ],
+      correct: 1,
+      explain: "Heinrich Himmler ran the SS, with Reinhard Heydrich heading up the Gestapo (secret police). Together they built the police-state machinery — terror as a system."
+    },
+    {
+      q: "How did Nazi Germany use the legal system as a method of control?",
+      options: [
+        "Judges swore loyalty to Hitler, and 'People's Courts' tried political opponents with no defence",
+        "The entire legal system was completely abolished and replaced with military tribunals only",
+        "Only foreign citizens could ever be put on trial — German nationals were always exempt",
+        "All trials were held exclusively in Latin so ordinary German citizens could not understand them"
+      ],
+      correct: 0,
+      explain: "Justice became a political weapon. People's Courts (Volksgerichtshof) handled 'treason' — death sentences were routine. The law no longer protected you; it hunted you."
+    },
+    {
+      q: "What was 'Total War' as declared by Goebbels in 1943?",
+      options: [
+        "A plan for Germany to invade every country on Earth within three years",
+        "Every aspect of civilian life and the economy redirected fully to support the war",
+        "A military strategy where Germany would only launch attacks during night time",
+        "A programme to double the physical size of all German-manufactured weapons"
+      ],
+      correct: 1,
+      explain: "After Stalingrad, Goebbels gave his famous 'Do you want total war?' speech. Civilians' luxuries cut, women drafted into factories, all pretence of normal life ended. The war ate everything."
+    },
+    {
+      q: "How did the role of women change in WWII Germany?",
+      options: [
+        "It stayed exactly the same throughout the entire course of the war years",
+        "Despite Nazi ideology pushing women to be housewives, war forced them into factories",
+        "All women were sent home from their jobs and banned from working completely",
+        "Women replaced men as the main combat soldiers fighting on the eastern front"
+      ],
+      correct: 1,
+      explain: "Total irony: Nazis spent the 30s telling women 'kitchen, children, church.' Then the war meant they desperately needed female labour. Millions of women drafted into war production."
+    },
+    {
+      q: "What was rationing like on the German Home Front during WWII?",
+      options: [
+        "There was no rationing at all — Germany had surplus food throughout the war",
+        "Food, clothing and fuel were strictly rationed, and by 1944 rations were painfully thin",
+        "Rationing only applied to foreign workers and prisoners, not German citizens",
+        "The only rationed item was chocolate — everything else remained freely available"
+      ],
+      correct: 1,
+      explain: "Ration cards from day one. Initially manageable, but as the war turned bad — and Allied bombing hit supply chains — rations shrank. By 1944–45 many Germans were near-starving."
+    },
+    {
+      q: "What was the impact of Allied bombing on German cities?",
+      options: [
+        "It had no real effect on German civilian morale or industrial production at all",
+        "Massive destruction — cities firebombed, hundreds of thousands killed, morale crushed",
+        "Only military bases and airfields were targeted — civilian areas were left untouched",
+        "The Allies only carried out bombing raids on weekends to limit civilian casualties"
+      ],
+      correct: 1,
+      explain: "Hamburg 1943 firestorm killed ~40,000 in days. Dresden 1945 killed 25,000+. Cities reduced to rubble. Civilians huddled in shelters night after night. The Home Front became a battlefield."
+    },
+    {
+      q: "Which youth opposition group rejected Nazi conformity and beat up Hitler Youth members?",
+      options: [
+        "The Hitler Youth themselves, who secretly rebelled against their own leaders",
+        "The Edelweiss Pirates, working-class teens who listened to banned jazz music",
+        "The Wehrmacht junior division, who fought against Nazi ideology from within",
+        "The League of German Maidens, who organised underground feminist protests"
+      ],
+      correct: 1,
+      explain: "The Edelweiss Pirates — hated Nazi regimentation. Listened to banned 'degenerate' jazz, attacked Hitler Youth, helped army deserters. Some were publicly hanged in 1944."
+    },
+    {
+      q: "What was the White Rose Group?",
+      options: [
+        "A Nazi flower-arrangement society run by senior party officials' wives",
+        "Munich university students who distributed anti-Nazi leaflets calling out Nazi crimes",
+        "A British spy ring that operated secretly across occupied northern France",
+        "A pro-Nazi women's organisation promoting traditional German family values"
+      ],
+      correct: 1,
+      explain: "The Scholl siblings + friends printed leaflets calling out Nazi crimes. Caught in Feb 1943, executed by guillotine days later. Sophie was 21. Brave beyond words."
+    },
+    {
+      q: "What was the July Bomb Plot (1944)?",
+      options: [
+        "A massive Allied bombing campaign targeting Berlin factories in mid-July",
+        "Colonel Stauffenberg's attempt to assassinate Hitler with a briefcase bomb",
+        "A Soviet surprise attack on the German military headquarters in Munich",
+        "A British intelligence plot to kidnap Goebbels during a propaganda tour"
+      ],
+      correct: 1,
+      explain: "Stauffenberg planted a briefcase bomb at the Wolf's Lair. It went off — Hitler survived (the briefcase had been moved behind a thick table leg). Around 5,000 people executed in revenge."
+    },
+    {
+      q: "What were the Nuremberg Laws (1935)?",
+      options: [
+        "Laws that stripped Jews of German citizenship and banned mixed marriages",
+        "Laws that gave German Jews fully equal rights with all other citizens",
+        "Regulations about the behaviour of athletes competing in the 1936 Olympics",
+        "Agricultural reforms designed specifically to protect small German farmers"
+      ],
+      correct: 0,
+      explain: "Two laws: the Reich Citizenship Law (Jews no longer citizens) and the Law for the Protection of German Blood (no marriage/relations between Jews and 'Aryans'). Codified racism."
+    },
+    {
+      q: "What was Kristallnacht (November 1938)?",
+      options: [
+        "An annual German festival celebrating traditional glass-blowing craftwork",
+        "'Night of Broken Glass' — coordinated attacks on Jewish shops and synagogues",
+        "A high-level Nazi peace conference held in a Bavarian mountain retreat",
+        "The signing of a military alliance between Nazi Germany and Fascist Italy"
+      ],
+      correct: 1,
+      explain: "Triggered by a Jewish teen shooting a German diplomat in Paris. Goebbels orchestrated the 'spontaneous' violence. Hundreds of synagogues burned, ~30,000 Jewish men sent to camps."
+    },
+    {
+      q: "What was the 'Final Solution'?",
+      options: [
+        "The Nazi plan to deport all European Jews to the island of Madagascar",
+        "The systematic genocide of Europe's Jews, formalised at the Wannsee Conference",
+        "Hitler's ambitious economic recovery plan for post-war German reconstruction",
+        "A peace treaty proposal offered to Britain and France in the autumn of 1943"
+      ],
+      correct: 1,
+      explain: "The Wannsee Conference formalised the Holocaust. Death camps industrialised murder. Six million Jews killed, plus millions of Roma, disabled people, Soviet POWs, political opponents. The lowest point in human history."
+    }
+  ],
+
+  tsarist: [
+    {
+      q: "What was the Duma?",
+      options: [
+        "Russia's feared secret police force, tasked with suppressing all political dissent",
+        "An elected Russian parliament, promised by Tsar Nicholas II in his October Manifesto",
+        "A private council of Tsarist generals who advised on all military strategy matters",
+        "The name for the Tsar's extended family council that managed the royal household"
+      ],
+      correct: 1,
+      explain: "The Duma was Russia's first taste of parliament. Nicholas only created it because the 1905 Revolution forced his hand — and he basically resented its existence from day one."
+    },
+    {
+      q: "How many Dumas were there before the 1917 Revolution?",
+      options: [
+        "Just 1 — it was dissolved quickly and never replaced by the Tsar",
+        "Exactly 2 — the Tsar shut them both down within a single year",
+        "There were 3 — each slightly more conservative than the one before",
+        "There were 4 — Nicholas dissolved the first two within a few months"
+      ],
+      correct: 3,
+      explain: "Four Dumas (1906, 1907, 1907–12, 1912–17). Nicholas dissolved the first two within months — they were too critical. He kept rigging electoral rules to make later Dumas more obedient."
+    },
+    {
+      q: "What was the Tsar's attitude to the FIRST Duma (1906)?",
+      options: [
+        "He genuinely listened to its reform proposals and implemented many of them",
+        "He hated it — when it demanded reform, he dissolved it after just 73 days",
+        "He gave it total legislative power over all Russian domestic and foreign policy",
+        "He turned it into the headquarters for the Russian army's general staff corps"
+      ],
+      correct: 1,
+      explain: "First Duma was full of liberals and reformers demanding land redistribution and ministers accountable to parliament. Nicholas slammed the door shut after 73 days. So much for democracy."
+    },
+    {
+      q: "Why was the Tsar disappointed with the SECOND Duma (1907)?",
+      options: [
+        "It was even more radical than the first, packed with socialists and revolutionaries",
+        "It refused to hold any meetings at all, leaving all its seats permanently empty",
+        "It demanded that Nicholas declare himself a god-emperor with absolute divine rights",
+        "Its members spent all their time debating football instead of governing the country"
+      ],
+      correct: 0,
+      explain: "Second Duma was MORE left-wing than the first. Nicholas dissolved it after 3 months and immediately changed the voting rules to favour landowners. Democracy on a leash."
+    },
+    {
+      q: "How did Nicholas make the THIRD and FOURTH Dumas more cooperative?",
+      options: [
+        "He allowed every Russian citizen to vote equally regardless of wealth or class",
+        "He changed the electoral system so wealthy landowners had far more voting power",
+        "He formally banned all elections and personally appointed every single member",
+        "He chose each member individually from a pre-approved list of loyal supporters"
+      ],
+      correct: 1,
+      explain: "Stolypin's electoral law (June 1907) gerrymandered the system. Landowners got disproportionate power, peasants and workers got squeezed. Result: tame Dumas Nicholas could tolerate."
+    },
+    {
+      q: "What does the Tsar's treatment of the Dumas tell us about him?",
+      options: [
+        "He was a committed democrat who genuinely wanted Russia to modernise fully",
+        "He only valued the Duma when it agreed with him — he never accepted power-sharing",
+        "He spent his entire life campaigning passionately for a free Russian parliament",
+        "He preferred full socialism and wanted workers to control the Russian government"
+      ],
+      correct: 1,
+      explain: "Classic Nicholas. Said the right things in the October Manifesto, then spent the next 12 years undermining the very thing he'd promised. His relationship with the Dumas was a slow betrayal of 1905."
+    },
+    {
+      q: "What was the October Manifesto (1905)?",
+      options: [
+        "A formal declaration of war on the Japanese Empire following the Manchurian crisis",
+        "Nicholas's reluctant promise of civil rights and an elected Duma to end the 1905 crisis",
+        "The official document recording the abdication of the Tsar from his imperial throne",
+        "A detailed communist takeover plan written by Lenin while exiled in Switzerland"
+      ],
+      correct: 1,
+      explain: "Forced on Nicholas by Witte during the 1905 chaos. Promised freedoms of speech/assembly + Duma. Calmed the revolution — but Nicholas was furious he'd had to give in."
+    },
+    {
+      q: "What sparked Bloody Sunday in January 1905?",
+      options: [
+        "Soldiers opened fire on peaceful workers marching to petition the Tsar at the palace",
+        "A series of coordinated bomb attacks targeted the Winter Palace and surrounding area",
+        "Revolutionary cells assassinated Lenin's brother, sparking nationwide demonstrations",
+        "A full-scale communist uprising seized control of the entire city centre of Moscow"
+      ],
+      correct: 0,
+      explain: "Father Gapon led peaceful workers carrying icons and singing hymns to deliver a petition to the Tsar. Troops opened fire. Hundreds died. The myth of the 'good Tsar' shattered forever."
+    },
+    {
+      q: "What was the Potemkin Mutiny (1905)?",
+      options: [
+        "A violent peasant uprising that swept through the frozen farmlands of northern Siberia",
+        "A mutiny by Russian sailors on the battleship Potemkin during the 1905 revolutionary wave",
+        "A coordinated strike by Moscow factory workers that shut down industrial production",
+        "An armed attack on the Winter Palace by soldiers returning from the Japanese front"
+      ],
+      correct: 1,
+      explain: "Sailors revolted over rotten meat (literally). Symbolised how unrest had spread even into the armed forces — terrifying for the Tsar."
+    },
+    {
+      q: "What were 'Soviets' that emerged in 1905?",
+      options: [
+        "Tsarist tax collectors sent to the countryside to enforce payments from peasants",
+        "Workers' councils — first formed in St Petersburg, important again in 1917",
+        "A type of armed secret police loyal directly to the Tsar's imperial government",
+        "Elected members of the Duma who represented the interests of the nobility"
+      ],
+      correct: 1,
+      explain: "Soviets = workers' councils. The St Petersburg Soviet of 1905 was the prototype. Trotsky was its chairman. Crushed at the time — but the model survived to topple the Tsar 12 years later."
+    },
+    {
+      q: "Why did Nicholas II survive the 1905 Revolution?",
+      options: [
+        "The army stayed loyal, the October Manifesto split opposition, and the Japanese war ended",
+        "Britain sent a large expeditionary force of soldiers to defend the Tsar's palace directly",
+        "All the leading revolutionaries were rounded up and exiled to the United States by ship",
+        "The Russian peasants loved Nicholas too much to ever take up arms against their ruler"
+      ],
+      correct: 0,
+      explain: "Three big factors: army loyalty, the October Manifesto peeling off the liberals, and ending the disastrous Russo-Japanese War freed up troops. Nicholas survived 1905. He wouldn't survive 1917."
+    },
+    {
+      q: "What was Stolypin's 'necktie'?",
+      options: [
+        "A fashionable new style of military uniform introduced across the Russian armed forces",
+        "A nickname for the hangman's noose — Stolypin executed thousands of political opponents",
+        "A prestigious type of medal awarded to soldiers who showed bravery in the Japanese war",
+        "A famous traditional Russian dance performed at court celebrations and state occasions"
+      ],
+      correct: 1,
+      explain: "Brutal nickname for brutal repression. Stolypin set up military courts that executed political opponents fast and often. The noose became known as 'Stolypin's necktie.' Charming."
+    },
+    {
+      q: "What were Stolypin's land reforms designed to do?",
+      options: [
+        "Seize all land from peasant farmers and hand it directly to the Orthodox Church",
+        "Create wealthy independent peasant farmers ('kulaks') who'd be loyal to the Tsar",
+        "Transfer all Russian agricultural land to British and French investor companies",
+        "Sell every piece of Russian farmland abroad to raise money for military spending"
+      ],
+      correct: 1,
+      explain: "Smart strategy: turn struggling peasants into property-owning kulaks who'd love the system that made them rich. Made some progress, but Stolypin was assassinated in 1911 before it could fully work."
+    },
+    {
+      q: "What was the Lena Goldfields strike (1912)?",
+      options: [
+        "A massive miners' strike where soldiers opened fire, killing 200+ and reigniting unrest",
+        "A peaceful and successful negotiation between gold mine workers and their bosses",
+        "A formal meeting of the fourth Duma to discuss conditions inside Russian gold mines",
+        "A brief work stoppage that ended quietly with no violence and no political consequences"
+      ],
+      correct: 0,
+      explain: "Workers struck over conditions; troops opened fire. Massacre echoed Bloody Sunday. Triggered massive strike wave across Russia in 1912–14. Showed the underlying anger never went away."
+    },
+    {
+      q: "What was the impact of WWI on Russia by 1917?",
+      options: [
+        "The economy collapsed, soldiers were starving and poorly armed, and millions were dead",
+        "Russia had won a series of decisive victories and was close to reaching Berlin itself",
+        "The war significantly strengthened the Tsar's popularity and public image at home",
+        "Russia successfully stayed neutral throughout the entire duration of the conflict"
+      ],
+      correct: 0,
+      explain: "WWI was a catastrophe for Russia. Massive battlefield defeats (Tannenberg!), supply chains broken, food shortages in cities, soldiers without rifles. The system buckled under the strain."
+    },
+    {
+      q: "Why did Tsar Nicholas's decision to lead the army personally in 1915 backfire?",
+      options: [
+        "He won every single battle but then got bored and returned to the palace early",
+        "He was personally blamed for every defeat, and left the clueless Tsarina running Russia",
+        "He never actually visited the frontlines — soldiers noticed and lost all respect for him",
+        "The soldiers loved him so much that they refused to fight for fear of losing their Tsar"
+      ],
+      correct: 1,
+      explain: "Worst decision of his reign. Defeats now had a face — his. Meanwhile in Petrograd, Alexandra (German-born, deeply unpopular) was making chaos with Rasputin whispering in her ear."
+    },
+    {
+      q: "Who was Rasputin?",
+      options: [
+        "A senior Bolshevik leader who organised factory strikes across Petrograd in 1916",
+        "A 'holy man' who influenced the Tsarina because he seemed to ease her son's illness",
+        "Russia's foreign minister, who negotiated secret alliances with both France and Britain",
+        "A decorated general in the army who commanded the entire Eastern Front against Germany"
+      ],
+      correct: 1,
+      explain: "Mystic, drunk, womaniser, immensely influential at court because of his apparent power over Alexei's bleeding episodes. His scandalous reputation dragged the monarchy's name into the gutter."
+    },
+    {
+      q: "What triggered the February Revolution (1917)?",
+      options: [
+        "A carefully planned communist takeover organised by Lenin from exile in Switzerland",
+        "Bread shortages and strikes in Petrograd, joined by soldiers who refused to fire on crowds",
+        "A full-scale German military invasion crossing the border into northern Russian territory",
+        "The assassination of Rasputin by a group of noble conspirators at a private dinner party"
+      ],
+      correct: 1,
+      explain: "International Women's Day strike (Feb 23) → bread riots → general strike → soldiers refused to fire on crowds and joined them. Within a week the Tsar's authority had vanished."
+    },
+    {
+      q: "Who took power immediately after Tsar Nicholas's abdication in March 1917?",
+      options: [
+        "The Bolsheviks, who seized the Winter Palace in a carefully planned armed takeover",
+        "The Provisional Government, sharing power uneasily with the Petrograd Soviet",
+        "Lenin personally, having returned immediately from his long exile in Switzerland",
+        "A military dictatorship led by Russia's top generals from the eastern front lines"
+      ],
+      correct: 1,
+      explain: "Two power centres at once: the Provisional Government (mainly liberals from the Duma) AND the Petrograd Soviet (workers + soldiers). They didn't trust each other. This 'dual power' would become fatal."
+    }
+  ],
+
+  bolshevik: [
+    {
+      q: "Why was the Provisional Government weak from day one?",
+      options: [
+        "It had no military forces available to enforce any of its orders or policies",
+        "It hadn't been elected, shared power with the Soviet, and continued the unpopular war",
+        "It was made up entirely of communists who openly wanted to destroy Russian capitalism",
+        "It refused to make any decisions or govern the country in any meaningful way at all"
+      ],
+      correct: 1,
+      explain: "Triple weakness: no electoral mandate, no monopoly on power (Soviet ran the streets and the soldiers), and continuing WWI guaranteed bread and peace would never improve. Doomed."
+    },
+    {
+      q: "What was Soviet Order Number 1 (March 1917)?",
+      options: [
+        "It officially made Lenin the new Prime Minister of all Russian government operations",
+        "It said soldiers only had to obey government orders if the Petrograd Soviet agreed first",
+        "It completely abolished all Soviets and transferred their powers to the Provisional Government",
+        "It declared war on Germany with immediate effect, launching a new eastern front offensive"
+      ],
+      correct: 1,
+      explain: "Order Number 1 was huge. The Provisional Government technically commanded the army — but only if the Soviet said so. Real military power lay with the Soviet. Dual power in writing."
+    },
+    {
+      q: "Who led the Provisional Government from July 1917?",
+      options: [
+        "Lenin, who returned from exile and immediately took charge of the government",
+        "Trotsky, the fiery revolutionary who had previously chaired the Petrograd Soviet",
+        "Kerensky, a moderate socialist who continued the war despite massive public opposition",
+        "Stalin, who quietly rose through party ranks to dominate Russian political leadership"
+      ],
+      correct: 2,
+      explain: "Alexander Kerensky — moderate socialist, eloquent speaker, terrible decision-maker. Continued the war (June Offensive disaster), couldn't deliver land reform, ended up fleeing in October."
+    },
+    {
+      q: "What were the April Theses?",
+      options: [
+        "Lenin's programme demanding 'Peace, Bread, Land' and total opposition to the government",
+        "A detailed peace treaty proposed by the Provisional Government to end the war with Germany",
+        "An official list of all Provisional Government members and their individual responsibilities",
+        "A new constitution drafted for Russia by moderate liberals in the Petrograd legal community"
+      ],
+      correct: 0,
+      explain: "Lenin landed at Finland Station (April 1917) and stunned everyone — even his own party — by demanding NO cooperation with the Provisional Government. Slogans cut to what people actually wanted."
+    },
+    {
+      q: "How did Lenin get back to Russia in April 1917?",
+      options: [
+        "He walked through the active front lines, disguised as a wounded German soldier",
+        "The Germans helped him travel in a sealed train, hoping he'd destabilise Russia internally",
+        "He flew back to Petrograd in an experimental hot air balloon across the Baltic Sea",
+        "He swam across the Baltic from Finland, arriving exhausted on the Russian coastline"
+      ],
+      correct: 1,
+      explain: "Germany sponsored Lenin's return — sealed train through enemy territory. They calculated correctly: he'd help knock Russia out of the war. Colossally good investment for them, short-term."
+    },
+    {
+      q: "What were the July Days (1917)?",
+      options: [
+        "A premature uprising in Petrograd that failed — Lenin was forced to flee to Finland",
+        "A massive and decisive Bolshevik victory that immediately overthrew the government",
+        "A formal peace agreement between Russia and Germany signed in neutral Switzerland",
+        "The lavish coronation ceremony held to officially install Kerensky as Prime Minister"
+      ],
+      correct: 0,
+      explain: "Workers and soldiers rose up, the Bolsheviks were ambivalent, the Provisional Government crushed it, branded Lenin a German agent, forced him into hiding. Looked like Bolshevism was finished."
+    },
+    {
+      q: "What was the Kornilov Revolt (August 1917)?",
+      options: [
+        "A right-wing general marched on Petrograd — Kerensky panicked and armed the Bolsheviks to stop him",
+        "A successful Bolshevik takeover of the Winter Palace that permanently removed Kerensky from power",
+        "An international peace conference attended by representatives from all the warring nations involved",
+        "A spontaneous peasant uprising across southern Russia that seized thousands of noble-owned farms"
+      ],
+      correct: 0,
+      explain: "Total disaster for Kerensky. He had to ask the Bolsheviks for help — they got weapons, prestige, and credit for saving Petrograd. The Kornilov Affair basically rebooted the Bolsheviks."
+    },
+    {
+      q: "When did the Bolsheviks seize power?",
+      options: [
+        "March 1917, immediately after the Tsar's formal abdication from the throne",
+        "October 1917 by the old Russian calendar, which is November in the modern one",
+        "December 1916, during the chaos following Rasputin's murder by noble conspirators",
+        "April 1918, several months after Lenin's return from his long exile in Switzerland"
+      ],
+      correct: 1,
+      explain: "Night of 25–26 October (Old Style) / 7–8 November (New Style). The 'October Revolution' is by the old Russian calendar. Russia switched calendars in Feb 1918."
+    },
+    {
+      q: "Who organised the military side of the October Revolution?",
+      options: [
+        "Lenin, who personally commanded all military operations from a secret bunker",
+        "Stalin, who quietly coordinated troop movements across the whole of Petrograd",
+        "Trotsky, who planned the seizure of key buildings as head of the Military Committee",
+        "Kerensky, who secretly switched sides and helped the Bolsheviks take the palace"
+      ],
+      correct: 2,
+      explain: "Trotsky chaired the Petrograd Soviet's Military Revolutionary Committee. He planned the takeover — the seizure of bridges, telegraph offices, railway stations. Lenin was the brain; Trotsky was the operator."
+    },
+    {
+      q: "What happened at the Winter Palace in October 1917?",
+      options: [
+        "A massive and bloody battle killed thousands of soldiers on both opposing sides",
+        "The Bolsheviks took it almost without resistance — the government basically surrendered",
+        "The entire building burned to the ground during an artillery bombardment by the navy",
+        "Kerensky personally organised the defence and held out for more than three full weeks"
+      ],
+      correct: 1,
+      explain: "Spoiler: the 'Storming of the Winter Palace' was way less dramatic than the films suggest. Hardly any defenders, almost no fighting. Kerensky had already fled."
+    },
+    {
+      q: "Why were the Bolsheviks successful in October 1917?",
+      options: [
+        "Lenin's leadership, Trotsky's planning, government failure, and slogans people believed in",
+        "Large numbers of well-equipped foreign troops crossed the border to fight alongside them",
+        "A majority of all Russian citizens had formally voted for them in a national referendum",
+        "The Tsar secretly returned from exile, publicly endorsed them, and joined their cause"
+      ],
+      correct: 0,
+      explain: "Lenin's vision + Trotsky's planning + 'Peace, Bread, Land' + a hopeless Provisional Government = a takeover that looked easy in hindsight (it wasn't). They struck at exactly the right moment."
+    },
+    {
+      q: "What were the first Bolshevik decrees in 1917?",
+      options: [
+        "Decree on Peace (ending the war) and Decree on Land (giving land to peasants)",
+        "Decree on Taxation (doubling all tax rates) and Decree on Crime (banning all protest)",
+        "A decree formally restoring the Tsar to his throne with limited constitutional powers",
+        "A decree banning all future elections permanently across every region of Russia"
+      ],
+      correct: 0,
+      explain: "Two killer policies on day one. The peace decree calmed the soldiers; the land decree won over the peasants. Cementing power through what people actually craved."
+    },
+    {
+      q: "What did the Bolsheviks do when they LOST the Constituent Assembly elections?",
+      options: [
+        "They peacefully accepted the result and handed power to the winning party",
+        "They let it meet once, in January 1918, then sent soldiers to shut it down permanently",
+        "They held a second round of elections and won the re-vote by a landslide margin",
+        "They formed a power-sharing coalition with the Socialist Revolutionaries who had won"
+      ],
+      correct: 1,
+      explain: "Bolsheviks came second to the Socialist Revolutionaries. So Lenin let the assembly meet for one day, then dissolved it at gunpoint. That was the moment Russian democracy died — for over 70 years."
+    },
+    {
+      q: "What was the Treaty of Brest-Litovsk (March 1918)?",
+      options: [
+        "A military alliance between Bolshevik Russia and the British Empire against Germany",
+        "The harsh peace with Germany — Russia lost huge territory but finally exited the war",
+        "A celebratory Bolshevik victory parade through the streets of central Petrograd",
+        "The formal order authorising the execution of the Tsar and the entire Romanov family"
+      ],
+      correct: 1,
+      explain: "Brutal terms: Russia lost Ukraine, Baltic states, Finland, Poland — ~25% of population. But Lenin needed peace at ANY price to consolidate at home."
+    },
+    {
+      q: "Who fought in the Russian Civil War (1918–21)?",
+      options: [
+        "Russia against Germany in a renewed conflict over control of Eastern European territory",
+        "Reds (Bolsheviks) vs Whites (a loose alliance of everyone who hated the Bolshevik regime)",
+        "Catholics against Protestants in a religiously motivated conflict across southern Russia",
+        "Industrial workers against peasant farmers in a dispute over grain prices and distribution"
+      ],
+      correct: 1,
+      explain: "The Whites were a chaotic coalition: ex-Tsarists, liberals, socialist rivals, plus foreign troops. Their only common cause was hating the Reds — which wasn't enough."
+    },
+    {
+      q: "Why did the Reds win the Civil War?",
+      options: [
+        "Trotsky's leadership, central control of railways and cities, Cheka terror, and White disunity",
+        "Foreign powers sent massive armies of well-equipped soldiers to fight alongside the Bolsheviks",
+        "The Whites immediately surrendered without fighting a single battle anywhere across Russia",
+        "The Tsar unexpectedly reappeared from hiding and publicly declared his full support for Lenin"
+      ],
+      correct: 0,
+      explain: "Trotsky built the Red Army from scratch — 5 million strong. Reds held the central core (Moscow + Petrograd + railways). Cheka crushed dissent. Whites were spread out and bickering."
+    },
+    {
+      q: "What was the Cheka?",
+      options: [
+        "The Bolshevik secret police, founded by Lenin in December 1917 to crush all opposition",
+        "A traditional type of Russian bread that became a symbol of the revolutionary movement",
+        "A small personal bodyguard unit of just twelve men who protected Lenin at all times",
+        "The new name given to the Russian parliament after the Bolsheviks seized full power"
+      ],
+      correct: 0,
+      explain: "Felix Dzerzhinsky's terror machine. Disappeared people, executions, 'Red Terror' from 1918. Lenin built terror into the system from the start — Stalin just turned the volume up."
+    },
+    {
+      q: "What was 'War Communism'?",
+      options: [
+        "Bolshevik wartime policy: nationalising industry, seizing grain from peasants, banning trade",
+        "A formal peace treaty between the Bolsheviks and the remaining White Army commanders",
+        "A distinctive type of military uniform worn by all Red Army soldiers during the civil war",
+        "A popular communist song that became the unofficial anthem of the Bolshevik revolution"
+      ],
+      correct: 0,
+      explain: "Survival economics. Cities starved without grain, so soldiers took it from peasants at gunpoint. Industry centrally controlled. Won the war but wrecked the economy. Famine of 1921 killed millions."
+    },
+    {
+      q: "What was the Kronstadt Mutiny (1921)?",
+      options: [
+        "A major White Army victory that nearly succeeded in capturing Moscow from the Bolsheviks",
+        "A revolt by Kronstadt sailors — once Bolshevik heroes — protesting War Communism's failures",
+        "A successful peasant uprising that permanently ended grain requisitioning in rural areas",
+        "A well-planned foreign invasion of Russian ports by British and French naval task forces"
+      ],
+      correct: 1,
+      explain: "Massive shock. Kronstadt sailors had been called 'the pride and glory of the revolution.' Now they wanted free elections and an end to grain seizures. Trotsky crushed them brutally — but the message was received."
+    },
+    {
+      q: "What was the New Economic Policy (NEP), introduced 1921?",
+      options: [
+        "Lenin's 'tactical retreat' — allowing small private trade while keeping big industry state-owned",
+        "A return to full Tsarist-era economic policies including reinstating the old aristocratic landlords",
+        "A massive new war tax imposed on every citizen to fund the ongoing Russian Civil War effort",
+        "A total nationalisation programme seizing every single business, farm and shop in the country"
+      ],
+      correct: 0,
+      explain: "Lenin pivoted hard. NEP allowed limited capitalism — the 'commanding heights' (banks, big industry) stayed state-owned, but peasants and small traders got breathing room. Economy began recovering."
+    },
+    {
+      q: "Why did some Bolsheviks oppose the NEP?",
+      options: [
+        "They saw it as a betrayal of socialism — bringing back capitalism through the back door",
+        "They wanted even higher taxes imposed on the already struggling Russian working class",
+        "They preferred a return to Tsarism and wanted to restore the Romanov royal family",
+        "They wanted an immediate military war with Britain to spread communism across Europe"
+      ],
+      correct: 0,
+      explain: "Hardliners called NEP 'New Exploitation of the Proletariat.' New rich peasants (kulaks) and 'NEP-men' traders looked like proof communism was being abandoned. Lenin called it temporary — Stalin would later wipe out the kulaks completely."
+    }
+  ]
+};
+
+/* ==========================================================
+   ROUND CONFIGURATION
+   ========================================================== */
+const ROUNDS = [
+  { id: 'weimar', icon: '⚒️', title: 'The Weimar Years', desc: 'Republic on life support — and the fragile recovery before the storm.', count: 10 },
+  { id: 'rise', icon: '🔥', title: "Hitler's Rise", desc: 'From beer hall flop to Chancellor — the climb to power.', count: 10 },
+  { id: 'dictatorship', icon: '☠️', title: 'Dictatorship & War', desc: 'The Nazi state, total control, and the Home Front collapse.', count: 10 },
+  { id: 'tsarist', icon: '👑', title: 'Tsarist Russia Crumbling', desc: '1905, the Dumas, Rasputin, war — the slow death of the Romanovs.', count: 10 },
+  { id: 'bolshevik', icon: '🚩', title: 'Red October & Beyond', desc: 'Provisional Government, Bolshevik takeover, civil war, NEP.', count: 10 },
+  { id: 'boss', icon: '⚔️', title: 'THE RECKONING', desc: '15 random questions from every era. No mercy.', count: 15, isBoss: true }
+];
+
+/* ==========================================================
+   STATE & STORAGE
+   ========================================================== */
+const STORAGE_KEY = 'history-mock-mode-v1';
+const state = { currentRound: null, questions: [], qIndex: 0, score: 0, answered: false, shuffledCorrect: 0 };
+
+function loadScores() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveScores(scores) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(scores)); } catch {}
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getQuestionsForRound(round) {
+  if (round.isBoss) {
+    const all = [];
+    Object.values(QUESTION_BANK).forEach(arr => all.push(...arr));
+    return shuffle(all).slice(0, round.count);
+  }
+  return shuffle(QUESTION_BANK[round.id]).slice(0, round.count);
+}
+
+/* ==========================================================
+   OPTION SHUFFLER — randomises A/B/C/D order every render
+   ========================================================== */
+function shuffleOptions(options, correctIndex) {
+  const indices = [0, 1, 2, 3];
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return {
+    options: indices.map(i => options[i]),
+    correctShuffled: indices.indexOf(correctIndex)
+  };
+}
+
+/* ==========================================================
+   HOME SCREEN
+   ========================================================== */
+function renderHome() {
+  const grid = document.getElementById('rounds-grid');
+  const scores = loadScores();
+  grid.innerHTML = '';
+
+  ROUNDS.forEach(round => {
+    const best = scores[round.id] || 0;
+    const card = document.createElement('div');
+    card.className = 'round-card' + (round.isBoss ? ' boss' : '');
+    card.innerHTML = `
+      <div class="round-header">
+        <div><div class="round-title">${round.title}</div></div>
+        <div class="round-icon">${round.icon}</div>
+      </div>
+      <div class="round-desc">${round.desc}</div>
+      <div class="round-meta">
+        <span>${round.count} QUESTIONS</span>
+        <span class="best-score">${best > 0 ? `BEST: ${best}/${round.count}` : 'NEW'}</span>
+      </div>
+    `;
+    card.addEventListener('click', () => startRound(round));
+    grid.appendChild(card);
+  });
+}
+
+/* ==========================================================
+   QUESTION FLOW
+   ========================================================== */
+function startRound(round) {
+  state.currentRound = round;
+  state.questions = getQuestionsForRound(round);
+  state.qIndex = 0;
+  state.score = 0;
+  state.answered = false;
+  showScreen('question-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  state.answered = false;
+  const q = state.questions[state.qIndex];
+  document.getElementById('q-round-name').textContent = `${state.currentRound.icon} ${state.currentRound.title}`;
+  document.getElementById('q-progress-text').textContent = `${state.qIndex + 1} / ${state.questions.length}`;
+  document.getElementById('progress-fill').style.width = `${(state.qIndex / state.questions.length) * 100}%`;
+  document.getElementById('question-box').textContent = q.q;
+
+  // Shuffle option order every render
+  const shuffled = shuffleOptions(q.options, q.correct);
+  state.shuffledCorrect = shuffled.correctShuffled;
+
+  const optsContainer = document.getElementById('options-container');
+  optsContainer.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  shuffled.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => handleAnswer(i, btn));
+    optsContainer.appendChild(btn);
+  });
+
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+  document.getElementById('next-btn').className = 'next-btn';
+}
+
+function handleAnswer(choice) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.questions[state.qIndex];
+  const correctIdx = state.shuffledCorrect;
+  const correct = choice === correctIdx;
+  const allButtons = document.querySelectorAll('.option');
+
+  allButtons.forEach((b, i) => {
+    b.disabled = true;
+    if (i === correctIdx) b.classList.add('correct');
+    else if (i === choice) b.classList.add('wrong');
+  });
+
+  const feedback = document.getElementById('feedback');
+  const feedbackTitle = document.getElementById('feedback-title');
+  const feedbackText = document.getElementById('feedback-text');
+
+  if (correct) {
+    state.score++;
+    feedbackTitle.textContent = '✓ NAILED IT';
+    feedback.classList.add('correct');
+  } else {
+    feedbackTitle.textContent = '✗ NOT QUITE';
+    feedback.classList.add('wrong');
+  }
+  feedbackText.textContent = q.explain;
+  feedback.classList.add('show');
+
+  document.getElementById('progress-fill').style.width = `${((state.qIndex + 1) / state.questions.length) * 100}%`;
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = state.qIndex === state.questions.length - 1 ? 'SEE RESULTS →' : 'NEXT →';
+  nextBtn.classList.add('show');
+}
+
+document.getElementById('next-btn').addEventListener('click', () => {
+  state.qIndex++;
+  if (state.qIndex >= state.questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+});
+
+/* ==========================================================
+   RESULTS SCREEN
+   ========================================================== */
+function showResults() {
+  showScreen('results-screen');
+  const total = state.questions.length;
+  const score = state.score;
+  const pct = (score / total) * 100;
+
+  document.getElementById('results-round-name').textContent = `${state.currentRound.icon} ${state.currentRound.title}`;
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-total').textContent = `/ ${total}`;
+
+  let msg, sub;
+  if (pct === 100) { msg = '⚜ FLAWLESS VICTORY ⚜'; sub = 'Untouchable. The history books bow to you.'; }
+  else if (pct >= 80) { msg = '🔥 ABSOLUTELY COOKING'; sub = 'Clean run. One more loop to make it stick forever.'; }
+  else if (pct >= 60) { msg = '⚔️ STRONG SHOWING'; sub = 'Solid base. The wobbles are exactly what to revisit.'; }
+  else if (pct >= 40) { msg = '🎯 GETTING THERE'; sub = 'Not bad. Every miss just turned into a study cue.'; }
+  else { msg = '📜 EARLY DAYS'; sub = 'No stress. The empire wasn\'t built in a day. Run it again.'; }
+
+  document.getElementById('score-message').textContent = msg;
+  document.getElementById('score-sub').textContent = sub;
+
+  const scores = loadScores();
+  const oldBest = scores[state.currentRound.id] || 0;
+  const newBestEl = document.getElementById('new-best');
+  if (score > oldBest) {
+    scores[state.currentRound.id] = score;
+    saveScores(scores);
+    newBestEl.style.display = 'block';
+  } else {
+    newBestEl.style.display = 'none';
+  }
+}
+
+document.getElementById('play-again-btn').addEventListener('click', () => {
+  startRound(state.currentRound);
+});
+document.getElementById('back-home-btn').addEventListener('click', () => {
+  showScreen('home-screen');
+  renderHome();
+});
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+renderHome();
+</script>
+</body>
+</html>
